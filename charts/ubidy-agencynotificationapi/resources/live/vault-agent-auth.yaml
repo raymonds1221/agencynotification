@@ -1,0 +1,16 @@
+- name: vault-agent-auth
+  image: vault
+  volumeMounts:
+    - name: config
+      mountPath: /etc/vault
+    - name: vault-token
+      mountPath: /home/vault
+  env:
+    - name: VAULT_ADDR
+      value: {{ .Values.vaultAddr | quote }}
+  args:
+    [
+      "agent",
+      "-config=/etc/vault/vault-agent-config.hcl",
+      #"-log-level=debug",
+    ]

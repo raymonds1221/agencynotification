@@ -1,0 +1,13 @@
+- name: vault-token
+  emptyDir:
+    medium: Memory
+- name: config
+  configMap:
+    name: agencynotificationapi-config
+    items:
+      - key: vault-agent-config.hcl
+        path: vault-agent-config.hcl
+      - key: consul-template-config.hcl
+        path: consul-template-config.hcl
+- name: shared-data
+  emptyDir: {}

@@ -1,0 +1,33 @@
+FROM golang:latest
+
+RUN apt-get update
+RUN apt-get install -y nginx
+
+RUN mkdir -p /usr/src/app/
+RUN mkdir /usr/local/go/src/github.com
+RUN mkdir /usr/local/go/src/github.com/Ubidy
+WORKDIR /usr/src/app
+
+COPY . /usr/src/app/
+COPY startup.sh /usr/src/app
+
+RUN ln -s /usr/src/app /usr/local/go/src/github.com/Ubidy/Ubidy_AgencyNotificationAPI
+
+RUN go get github.com/auth0-community/auth0
+RUN go get github.com/denisenkom/go-mssqldb
+RUN go get github.com/gin-gonic/gin
+RUN go get github.com/google/uuid
+RUN go get github.com/gin-contrib/cors
+RUN go get gopkg.in/GetStream/stream-go2.v1
+RUN go get github.com/Microsoft/ApplicationInsights-Go/appinsights
+RUN go get gopkg.in/mgo.v2
+RUN go get gopkg.in/square/go-jose.v2
+RUN go build -o agencyactivitystreamapi .
+
+RUN chmod 777 /usr/src/app/startup.sh
+
+RUN rm /etc/nginx/nginx.conf
+COPY nginx.conf /etc/nginx
+
+EXPOSE 5021 80 443 8443
+CMD sh /usr/src/app/startup.sh

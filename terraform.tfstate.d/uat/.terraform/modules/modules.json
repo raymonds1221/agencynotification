@@ -1,0 +1,1 @@
+{"Modules":[{"Source":"../modules/vault","Key":"1.vault;../modules/vault","Version":"","Dir":".terraform/modules/0639c702fc28f0aa040f4ca07ed9f9f0","Root":""},{"Source":"../modules/kubernetes","Key":"1.kubernetes;../modules/kubernetes","Version":"","Dir":".terraform/modules/29ddee3bd311ef6bd48f260bdac58122","Root":""}]}

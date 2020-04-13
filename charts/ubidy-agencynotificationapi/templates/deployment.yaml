@@ -1,0 +1,74 @@
+{{- if .Values.knativeDeploy }}
+{{- else }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "fullname" . }}
+  labels:
+    draft: {{ default "draft-app" .Values.draft }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        draft: {{ default "draft-app" .Values.draft }}
+        app: {{ template "fullname" . }}
+{{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+{{- end }}
+    spec:
+      containers:
+      - name: vault-agent-auth
+        image: vault
+        volumeMounts:
+        - name: config
+          mountPath: /etc/vault
+        - name: vault-token
+          mountPath: /home/vault
+        env:
+        - name: VAULT_ADDR
+          value: {{ .Values.vaultAddr | quote }}
+        args:
+          [
+            "agent",
+            "-config=/etc/vault/vault-agent-config.hcl",
+            #"-log-level=debug",
+          ]
+      - name: consul-template
+        image: hashicorp/consul-template:alpine
+        imagePullPolicy: Always
+        env:
+{{ tpl (.Files.Get ( printf "resources/%s/consul-template.yaml" .Values.environment )) . | indent 10 }}
+        volumeMounts:
+        - name: vault-token
+          mountPath: /home/vault
+        - name: config
+          mountPath: /etc/consul-template
+        - name: shared-data
+          mountPath: /etc/secrets
+        args:
+            [
+              "-config=/etc/consul-template/consul-template-config.hcl",
+              #"-log-level=debug",
+            ]
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+{{ tpl (.Files.Get ( printf "resources/%s/env.yaml" .Values.environment )) . | indent 10 }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        volumeMounts:
+        - name: shared-data
+          mountPath: /run/secrets
+        resources:
+{{ tpl (.Files.Get ( printf "resources/%s/spec.yaml" .Values.environment )) . | indent 12 }}
+      serviceAccount: {{ template "serviceAccount" . }}
+      automountServiceAccountToken: true
+      volumes:
+{{ tpl (.Files.Get ( printf "resources/%s/volumes.yaml" .Values.environment )) . | indent 8 }}
+{{- end }}

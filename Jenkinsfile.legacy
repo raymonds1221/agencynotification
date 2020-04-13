@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+
+  environment {
+    IMAGE_NAME = "ubidy/agencyactivitystreamapi:release-v$BUILD_NUMBER"
+    DOCKER_HOST = 'tcp://0.0.0.0:2375'
+  }
+
+  stages {
+    stage('Get Source') {
+      steps {
+        git branch: "${params.VERSION.replace('origin/', '')}", url: "git@github.com:Ubidy/Ubidy_AgencyNotificationAPI.git"
+      }
+    }
+
+    stage('Dockerize') {
+      steps {
+        sh "docker build -t $IMAGE_NAME ."
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'This is a testing part'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sh "docker tag $IMAGE_NAME $DTR_UAT_URL/$IMAGE_NAME"
+        build job: 'AgencyNotificationAPIJob', parameters:
+        [
+          [$class: 'StringParameterValue', name: 'imageName', value: "$IMAGE_NAME"],
+        ]
+      }
+    }
+
+  }
+}

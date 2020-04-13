@@ -1,0 +1,1 @@
+{"Modules":[{"Source":"../modules/vault-stage","Key":"1.vault;../modules/vault-stage","Version":"","Dir":".terraform/modules/127f92d685d03904437aa9620416c6a9","Root":""},{"Source":"../modules/kubernetes-stage","Key":"1.kubernetes;../modules/kubernetes-stage","Version":"","Dir":".terraform/modules/9e4cbe3895235882276ea563bb7a0b3c","Root":""}]}

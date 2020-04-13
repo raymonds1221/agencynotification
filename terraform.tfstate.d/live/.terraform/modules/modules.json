@@ -1,0 +1,1 @@
+{"Modules":[{"Source":"../modules/vault-live","Key":"1.vault;../modules/vault-live","Version":"","Dir":".terraform/modules/37dfd4f96962127ad461b00cedcf4966","Root":""},{"Source":"../modules/kubernetes-live","Key":"1.kubernetes;../modules/kubernetes-live","Version":"","Dir":".terraform/modules/35bf636ef694351e3cc0b564fa4aa68e","Root":""}]}
